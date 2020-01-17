@@ -1,20 +1,18 @@
-//DOM
 let images = document.getElementById("images");
 
 var KEY = "86lFhJYGhotgZg9tabUmZFMJALyrDJOFZF9q4qTY"
 var roverURL = "https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=";
 
-
+getList();
 
 function showImages(Sol, Curiosity, Camera, MAX_NUM) {
-    //let myJSON = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + Sol + "&camera=" + Camera + "&api_key=" + KEY;
     let myJSON = "https://api.nasa.gov/mars-photos/api/v1/rovers/" + Curiosity + "/photos?sol=" + Sol + "&camera=" + Camera + "&api_key=" + KEY;
     console.log(myJSON);
     fetch(myJSON)
         .then(response => response.json())
         .then(function (jsonHackathon) {
             images.innerHTML = "";
-            for (let i = 0; i < jsonHackathon.photos.length && i < MAX_NUM; i++) {
+            for (let i = 0; i < jsonHackathon.photos.length || i < MAX_NUM; i++) {
                 images.innerHTML += "<div class=\"col-3\"> <div class=\"thumbnail\"> <a href=\" " + jsonHackathon.photos[i].img_src + "\"><img src=\" " + jsonHackathon.photos[i].img_src + "\" alt=\" " + jsonHackathon.photos[i].camera.full_name + " \" style=\"width:100%\"/> <div class=\"caption\"> <p>" + jsonHackathon.photos[i].camera.full_name + "</p> </div> </a> </div> </div>";
             }
         })
@@ -25,7 +23,7 @@ async function getList() {
     var rovers = await fetch(roverURL + KEY)
         .then(response => response.json())
         .catch(error => document.write(error));
-    roverData = JSON.stringify(rovers);
+    var roverData = JSON.stringify(rovers);
 
     var roversJson = await JSON.parse(roverData);
 
@@ -40,13 +38,9 @@ async function getList() {
         for (var j = 0; j < roversJson.rovers[i].cameras.length; j++) {
             var func = `"showImages(1000, '${roversJson.rovers[i].name}', '${roversJson.rovers[i].cameras[j].name}', 5)">${roversJson.rovers[i].cameras[j].full_name}`;
             htmlLines += `<a class="dropdown-item" href="javascript:void(0);" onclick=${func}</a>`;
-
-
         }
         htmlLines += "</div></li>";
     }
 
     document.getElementById("home").insertAdjacentHTML("afterend", htmlLines);
 }
-
-getList();
