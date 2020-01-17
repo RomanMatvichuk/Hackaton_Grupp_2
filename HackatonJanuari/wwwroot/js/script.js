@@ -5,8 +5,8 @@ var roverURL = "https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=";
 
 getList();
 
-function showImages(Sol, Curiosity, Camera, MAX_NUM) {
-    let myJSON = "https://api.nasa.gov/mars-photos/api/v1/rovers/" + Curiosity + "/photos?sol=" + Sol + "&camera=" + Camera + "&api_key=" + KEY;
+function showImages(Sol, Rover, Camera, MAX_NUM) {
+    let myJSON = "https://api.nasa.gov/mars-photos/api/v1/rovers/" + Rover + "/photos?sol=" + Sol + "&camera=" + Camera + "&api_key=" + KEY;
     console.log(myJSON);
     fetch(myJSON)
         .then(response => response.json())
@@ -20,25 +20,24 @@ function showImages(Sol, Curiosity, Camera, MAX_NUM) {
 }
 
 async function getList() {
-    var rovers = await fetch(roverURL + KEY)
+    var roversJson = await fetch(roverURL + KEY)
         .then(response => response.json())
         .catch(error => document.write(error));
-    var roverData = JSON.stringify(rovers);
-
-    var roversJson = await JSON.parse(roverData);
 
     var htmlLines = "";
 
     for (var i = 0; i < roversJson.rovers.length; i++) {
-        htmlLines += "<li class=\"nav-item dropdown\">"
-        htmlLines += "<a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"" + roversJson.rovers[i].name + "\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">";
-        htmlLines += roversJson.rovers[i].name + "</a>";
-        htmlLines += "<div class=\"dropdown-menu\" aria-labelledby=\"" + roversJson.rovers[i].name + "\">";
+        htmlLines += `<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="${roversJson.rovers[i].name}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                ${roversJson.rovers[i].name}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="${roversJson.rovers[i].name}">`;
 
         for (var j = 0; j < roversJson.rovers[i].cameras.length; j++) {
             var func = `"showImages(1000, '${roversJson.rovers[i].name}', '${roversJson.rovers[i].cameras[j].name}', 5)">${roversJson.rovers[i].cameras[j].full_name}`;
             htmlLines += `<a class="dropdown-item" href="javascript:void(0);" onclick=${func}</a>`;
         }
+
         htmlLines += "</div></li>";
     }
 
